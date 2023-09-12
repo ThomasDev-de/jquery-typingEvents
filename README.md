@@ -19,7 +19,7 @@
 |-----------------------------------------------------------|---|---|
 | key.any                                                   |   |   |
 | kex.A<br/>key.a<br/>key.B<br/>key.b<br/>key.Shift<br/>... |   |   |
-| kex.prevented                                             |   |   |
+| key.prevented                                             |   |   |
 | typingStart                                               |   |   |
 | typingEnd                                                 |   |   |
 
