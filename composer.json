@@ -1,0 +1,15 @@
+{
+  "name": "webcito/jquery-typeng-events",
+  "description": "description",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "tkirsch",
+      "email": "t.kirsch@webcito.de"
+    }
+  ],
+  "require": {
+    "components/jquery": "3.6.0"
+  }
+}
