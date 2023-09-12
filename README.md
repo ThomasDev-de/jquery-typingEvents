@@ -15,11 +15,11 @@
 
 ## events
 
-| event         |   |   |
-|---------------|---|---|
-| key.any       |   |   |
-| kex.{key}     |   |   |
-| kex.prevented |   |   |
-| typingStart   |   |   |
-| typingEnd     |   |   |
+| event                                 |   |   |
+|---------------------------------------|---|---|
+| key.any                               |   |   |
+| kex.A<br/>key.a<br/>key.Shift<br/>... |   |   |
+| kex.prevented                         |   |   |
+| typingStart                           |   |   |
+| typingEnd                             |   |   |
 
