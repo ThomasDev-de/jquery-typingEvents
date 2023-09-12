@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>jquery keyTypeing</title>
+</head>
+<body>
+<input type="text" id="input_example_1">
+<script src="../vendor/components/jquery/jquery.min.js"></script>
+<script src="../dist/jquery-typingEvents.min.js"></script>
+<script>
+    $('#input_example_1').typingEvents({
+        // allowedKeys: ['a', 'A'],
+        // preventedKeys: ['b', 'B'],
+        onKeyDown: (e, key) => {
+            console.log(key);
+        },
+        onKeyUp: (e, key) => {
+            console.log('keyup',key);
+        }, onPrevented: key => {
+            console.log(key + ' not allowed');
+        }
+    })
+    $('#input_example_1').on('key.Shift', function(){
+        alert('Schift');
+    });
+</script>
+</body>
+</html>

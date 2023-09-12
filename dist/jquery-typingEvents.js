@@ -11,7 +11,6 @@
         }
 
         const input = $(this);
-        const wrapperClass = 'wc-typing-wrapper';
 
         if (input.data('typingEvents') === true) {
             return input;
@@ -19,20 +18,53 @@
 
         const DEFAULTS = {
             delay: 400,
-            typingContent: '✍'
+            preventedKeys: [],
+            allowedKeys: [],
+            onKeyDown(event, key, allowed) {
+            },
+            onKeyUp(key) {
+            },
+            onPrevented(key) {
+            },
+            onTypingStart() {
+            },
+            onTypingEnd(value) {
+            }
         };
 
         const setup = $.extend({}, DEFAULTS, options || {});
 
         let timer = 0;
 
+        /**
+         *
+         * @param {$|jQuery} el
+         * @return {void}
+         */
         function events(el) {
             el
-                .on('keydown', function () {
+                .on('keydown', function (e) {
+                    setup.onKeyUp(e, e.key);
+                })
+                .on('keydown', function (e) {
+
+                    setup.onKeyDown(e, e.key);
+                    const disallow = (setup.allowedKeys.length && setup.allowedKeys.indexOf(e.key) === -1) || setup.preventedKeys.indexOf(e.key) > -1;
+                    input.trigger('key.any', [e.key, !disallow]);
+                    input.trigger('key.'+e.key, [e.key, !disallow]);
+                    setup.onKeyDown(e, e.key, !disallow);
+
+                    if(disallow){
+                        e.preventDefault();
+                        input.trigger('key.prevented', [e.key]);
+                        setup.onPrevented(e.key);
+                        return false;
+                    }
+
                     if (input.data('typing') !== true) {
                         input.trigger('typingStart');
                         input.data('typing', true);
-                        getWrapper(input).addClass('typing')
+                        setup.onTypingStart();
                     }
                 })
                 .on('input', function () {
@@ -43,34 +75,20 @@
                     timer = setTimeout(function () {
                         input.trigger('typingEnd', [input, input.val() || null])
                         input.data('typing', false);
-                        getWrapper(input).removeClass('typing')
+                        setup.onTypingEnd(input.val());
                     }, setup.delay);
                 })
         }
 
-        function getWrapper(input) {
-            return input.closest('.' + wrapperClass);
-        }
-
-        function setStyles() {
-            if (!$("style#wc_typing_styles").length) {
-                $(`<style id="wc_typing_styles">
-                        .wc-typing-wrapper { position: relative; display: flex; align-items: center; }
-                        .wc-typing-wrapper.typing::after { display: block; position: absolute; flex: 1; right: 10px; font-size:1.5rem;  content: '${setup.typingContent}'}
-                    </style>`).appendTo('head');
-            }
-        }
-
+        /**
+         *
+         * @return {$|jQuery}
+         */
         function init() {
             events(input);
-            input.wrap(function () {
-                return `<div class="${wrapperClass}"></div>`;
-            });
             input.data('typing', false);
             input.data('typingEvents', true);
             input.data('setup', setup);
-            input.addClass('wc-typing-events');
-            setStyles();
             return input;
         }
 
