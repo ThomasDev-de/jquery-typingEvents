@@ -73,6 +73,7 @@
                     }
 
                     timer = setTimeout(function () {
+                        input.val($.trim(input.val()));
                         input.trigger('typingEnd', [input, input.val() || null])
                         input.data('typing', false);
                         setup.onTypingEnd(input.val());
