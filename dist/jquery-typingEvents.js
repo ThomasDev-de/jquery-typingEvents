@@ -1,4 +1,7 @@
+// noinspection DuplicatedCode
+
 (function ($) {
+    // noinspection DuplicatedCode
     $.fn.typingEvents = function (options) {
         if (!$(this).length) {
             return this;
@@ -20,6 +23,7 @@
             delay: 400,
             preventedKeys: [],
             allowedKeys: [],
+            trim: ".,|]\\^",
             onKeyDown(event, key, allowed) {
             },
             onKeyUp(key) {
@@ -48,17 +52,18 @@
                 })
                 .on('keydown', function (e) {
 
-                    setup.onKeyDown(e, e.key);
-                    const disallow = (setup.allowedKeys.length && setup.allowedKeys.indexOf(e.key) === -1) || setup.preventedKeys.indexOf(e.key) > -1;
-                    input.trigger('key.any', [e.key, !disallow]);
-                    input.trigger('key.'+e.key, [e.key, !disallow]);
-                    setup.onKeyDown(e, e.key, !disallow);
+                    const isPrevented = setup.preventedKeys.length !== 0 && (setup.preventedKeys.indexOf(e.key) > -1);
+                    const isAllowed = !isPrevented &&  ! setup.allowedKeys.length || (setup.allowedKeys.indexOf(e.key) > -1);
 
-                    if(disallow){
+                    input.trigger('key.any', [e.key, isAllowed]);
+                    input.trigger('key.' + e.key, [e.key, isAllowed]);
+                    setup.onKeyDown(e, e.key, isAllowed);
+
+                    if (!isAllowed) {
                         e.preventDefault();
                         input.trigger('key.prevented', [e.key]);
                         setup.onPrevented(e.key);
-                        return false;
+                        return;
                     }
 
                     if (input.data('typing') !== true) {
@@ -68,17 +73,43 @@
                     }
                 })
                 .on('input', function () {
+
                     if (timer) {
                         clearTimeout(timer);
                     }
 
                     timer = setTimeout(function () {
-                        input.val($.trim(input.val()));
-                        input.trigger('typingEnd', [input, input.val() || null])
+
+                        let value = $.trim(input.val());
+                        if (input.attr('type') !== 'password') {
+                            if (setup.trim && setup.trim.length) {
+                                for (let c of setup.trim) {
+                                    value = trim(value, c);
+                                }
+                            }
+                        }
+
+                        input.val($.trim(value));
+                        input.trigger('typingEnd', [input.val() || null]);
                         input.data('typing', false);
                         setup.onTypingEnd(input.val());
                     }, setup.delay);
                 })
+        }
+
+        /**
+         * @link https://stackoverflow.com/a/32516190
+         * @param {string} s
+         * @param {string} c
+         * @return {string}
+         */
+        function trim(s, c) {
+            if (c === "]") c = "\\]";
+            if (c === "^") c = "\\^";
+            if (c === "\\") c = "\\\\";
+            return s.replace(new RegExp(
+                "^[" + c + "]+|[" + c + "]+$", "g"
+            ), "");
         }
 
         /**

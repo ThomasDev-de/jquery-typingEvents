@@ -1,6 +1,6 @@
 {
   "name": "webcito/jquery-typing-events",
-  "description": "description",
+  "description": "The jQuery plugin simplifies the events that take place in an input field. The default properties are not overwritten.",
   "minimum-stability": "stable",
   "license": "proprietary",
   "authors": [
