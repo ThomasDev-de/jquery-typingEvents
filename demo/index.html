@@ -2,58 +2,303 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>jquery keyTypingEvents</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>jQuery typingEvents Demo</title>
     <style>
+        :root {
+            --bg: #f4f6fb;
+            --panel: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --line: #d9e0ec;
+            --ok: #0e9f6e;
+            --warn: #d97706;
+            --bad: #dc2626;
+            --accent: #2563eb;
+            --console: #0f172a;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: "DejaVu Sans",serif;
+            margin: 0;
+            font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .layout {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 28px 20px 36px;
+        }
+
+        .header {
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 14px;
+        }
+
+        .panel h2 {
+            margin: 0 0 8px;
+            font-size: 16px;
+        }
+
+        .hint {
+            margin: 0 0 10px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .row {
             display: flex;
-            justify-content: center;
-        }
-        .container {
-            width: 1280px;
-            max-width: 1280px;
-            border-left: 1px solid grey;
-            border-right: 1px solid grey;
-            padding: 20px;
+            gap: 8px;
+            align-items: center;
         }
 
-        input {
-            padding: 6px;
-            border-radius: 4px;
-            border: 1px solid grey;
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            border: 1px solid #bec9db;
+            border-radius: 7px;
+            padding: 9px 10px;
+            font-size: 15px;
+            color: var(--text);
+            outline: none;
+            transition: border-color 150ms ease;
         }
 
-        pre {
-            padding: 10px;
-            border-radius: 4px;
-            background-color: black;
-            color: white;
-            font-family: monospace;
+        input:focus {
+            border-color: var(--accent);
+        }
+
+        .status {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chip {
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            padding: 4px 9px;
+            font-size: 12px;
+            color: var(--muted);
+            background: #f9fbff;
+        }
+
+        .chip.ok { color: var(--ok); border-color: #9ee2ca; background: #ecfdf5; }
+        .chip.warn { color: var(--warn); border-color: #f6cf90; background: #fffbeb; }
+        .chip.bad { color: var(--bad); border-color: #f7b5b5; background: #fef2f2; }
+
+        .panel-wide {
+            grid-column: span 2;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        button {
+            border: 1px solid #bac8de;
+            background: #fff;
+            color: #1f2937;
+            border-radius: 7px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        button:hover {
+            border-color: #90a5c8;
+        }
+
+        .log {
+            margin: 0;
+            background: var(--console);
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 13px;
+            line-height: 1.5;
+            padding: 12px;
+            height: 260px;
+            overflow: auto;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        }
+
+        .help {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        @media (max-width: 900px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .panel-wide {
+                grid-column: span 1;
+            }
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>Testpage for jquery typingEvents</h1>
-    <label for="input_example_1"></label><input type="text" id="input_example_1" autocomplete="off">
-    <pre>
+<main class="layout">
+    <header class="header">
+        <h1>jquery-typingEvents</h1>
+        <p class="subtitle">Live demo for key filters, typing start/end, and auto-trim.</p>
+    </header>
 
-</pre>
-</div>
+    <section class="grid">
+        <article class="panel">
+            <h2>1) Basic Typing</h2>
+            <p class="hint">Typing start/end is triggered during normal input (delay 400ms).</p>
+            <input type="text" id="demo-basic" autocomplete="off" placeholder="Type freely here...">
+            <div class="status" id="status-basic"></div>
+        </article>
+
+        <article class="panel">
+            <h2>2) Allowed Keys</h2>
+            <p class="hint">Only numbers, dot, and minus are allowed.</p>
+            <input type="text" id="demo-allowed" autocomplete="off" placeholder="e.g. -12.34">
+            <div class="status" id="status-allowed"></div>
+        </article>
+
+        <article class="panel">
+            <h2>3) Prevented Keys</h2>
+            <p class="hint">Space and comma are blocked.</p>
+            <input type="text" id="demo-prevented" autocomplete="off" placeholder="Try space / comma">
+            <div class="status" id="status-prevented"></div>
+        </article>
+
+        <article class="panel">
+            <h2>4) Trim + Delay</h2>
+            <p class="hint">Trims from both ends: <code>.,|]\\^</code> (delay 900ms).</p>
+            <input type="text" id="demo-trim" autocomplete="off" placeholder="Type ..|\\abc^^">
+            <div class="status" id="status-trim"></div>
+        </article>
+
+        <article class="panel panel-wide">
+            <div class="toolbar">
+                <h2>Event Log</h2>
+                <button id="clear-log" type="button">Clear log</button>
+            </div>
+            <pre class="log" id="event-log"></pre>
+            <div class="help">Tip: Each input is initialized separately with <code>.typingEvents()</code>.</div>
+        </article>
+    </section>
+</main>
+
 <script src="../vendor/components/jquery/jquery.min.js"></script>
 <script src="../dist/jquery-typingEvents.min.js"></script>
 <script>
-    const input = $('#input_example_1');
-    input.typingEvents({
-        // allowedKeys: ['a', 'A'],
-        // preventedKeys: ['b', 'B'],
-        onKeyDown(e, key) {
-            $('<span>', {text: key, css: {display: 'block'}}).appendTo('pre');
-        },
-        onKeyUp() {
-            // console.log('keyup',key);
+    (function () {
+        const maxLines = 120;
+        const $log = $('#event-log');
+
+        function line(name, eventName, payload) {
+            const ts = new Date().toLocaleTimeString('en-US', {hour12: false});
+            const text = '[' + ts + '] ' + name + ' -> ' + eventName + (payload ? ' | ' + payload : '');
+            const current = $log.text().split('\n').filter(Boolean);
+            current.push(text);
+            while (current.length > maxLines) current.shift();
+            $log.text(current.join('\n'));
+            $log.scrollTop($log[0].scrollHeight);
         }
-    })
+
+        function setStatus(target, values) {
+            const html = values.map(function (item) {
+                const klass = item.level ? 'chip ' + item.level : 'chip';
+                return '<span class="' + klass + '">' + item.label + '</span>';
+            }).join('');
+            $(target).html(html);
+        }
+
+        function wire(name, selector, options, statusTarget) {
+            const state = {
+                lastKey: '-',
+                typing: false,
+                prevented: '-',
+                value: ''
+            };
+
+            function render() {
+                setStatus(statusTarget, [
+                    {label: 'typing: ' + (state.typing ? 'true' : 'false'), level: state.typing ? 'ok' : ''},
+                    {label: 'lastKey: ' + state.lastKey},
+                    {label: 'prevented: ' + state.prevented, level: state.prevented === '-' ? '' : 'bad'},
+                    {label: 'value: ' + (state.value === '' ? '""' : '"' + state.value + '"'), level: 'warn'}
+                ]);
+            }
+
+            $(selector).typingEvents($.extend({}, options, {
+                onKeyDown: function (event, key, allowed) {
+                    state.lastKey = key;
+                    state.prevented = allowed ? '-' : key;
+                    line(name, 'keyDown', 'key="' + key + '" allowed=' + allowed);
+                    render();
+                },
+                onPrevented: function (key) {
+                    state.prevented = key;
+                    line(name, 'prevented', 'key="' + key + '"');
+                    render();
+                },
+                onTypingStart: function () {
+                    state.typing = true;
+                    line(name, 'typingStart');
+                    render();
+                },
+                onTypingEnd: function (value) {
+                    state.typing = false;
+                    state.value = value || '';
+                    line(name, 'typingEnd', 'value=' + JSON.stringify(value));
+                    render();
+                }
+            }));
+
+            render();
+        }
+
+        const numberKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '-', 'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'];
+
+        wire('basic', '#demo-basic', {delay: 400}, '#status-basic');
+        wire('allowed', '#demo-allowed', {allowedKeys: numberKeys}, '#status-allowed');
+        wire('prevented', '#demo-prevented', {preventedKeys: [' ', ',']}, '#status-prevented');
+        wire('trim', '#demo-trim', {delay: 900}, '#status-trim');
+
+        $('#clear-log').on('click', function () {
+            $log.text('');
+        });
+    }());
 </script>
 </body>
 </html>
